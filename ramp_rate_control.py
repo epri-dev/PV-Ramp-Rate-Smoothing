@@ -85,8 +85,8 @@ def run_smooth_controller(pv_input, settings, plotoutput, kp=1.2, ki=1.8, kf=0.3
         if (battery_soc - battery_power_terminal*batt_half_round_trip_eff*power_to_energy_conversion_factor) > settings['battery_energy']:
             battery_power_terminal = -1*(settings['battery_energy'] - battery_soc)/power_to_energy_conversion_factor/batt_half_round_trip_eff
         #check empty
-        elif (battery_soc - battery_power_terminal*power_to_energy_conversion_factor) < 0:
-            battery_power_terminal = battery_soc/power_to_energy_conversion_factor/batt_half_round_trip_eff
+        elif (battery_soc - battery_power_terminal*power_to_energy_conversion_factor/batt_half_round_trip_eff) < 0:
+            battery_power_terminal = battery_soc/power_to_energy_conversion_factor*batt_half_round_trip_eff
         
         #enforce battery power limits
         #discharging too fast
@@ -128,7 +128,7 @@ def run_smooth_controller(pv_input, settings, plotoutput, kp=1.2, ki=1.8, kf=0.3
         if battery_power_terminal > 0:#discharging - efficiency loss increases the amount of energy drawn from the battery
             battery_soc = battery_soc - battery_power_terminal*power_to_energy_conversion_factor/batt_half_round_trip_eff
         elif battery_power_terminal < 0:#charging - efficiency loss decreases the amount of energy put into the battery
-            battery_soc = battery_soc - battery_power_terminal*batt_half_round_trip_eff*power_to_energy_conversion_factor
+            battery_soc = battery_soc - battery_power_terminal*power_to_energy_conversion_factor*batt_half_round_trip_eff
         previous_power = out_power
         
         #update output variables
